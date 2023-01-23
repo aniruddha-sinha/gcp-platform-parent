@@ -1,6 +1,6 @@
 //vpc
 module "vpc" {
-  source = "git::https://github.com/aniruddha-sinha/gcp-network-module?ref=master"
+  source = "git@github.com:aniruddha-sinha/gcp-network-module.git?ref=master"
   //source = "../../modules/vpc"
 
   project-id               = "odin-sixteen"
@@ -14,16 +14,17 @@ module "vpc" {
 
 //iam
 module "iam" {
-  source = "git::https://github.com/aniruddha-sinha/gcp-iam-module?ref=main"
+  source = "git@github.com:aniruddha-sinha/gcp-iam-module.git?ref=main"
   //source = "../../modules/iam"
 
   project_id                   = "odin-sixteen"
   service_account_id           = "gke-sa"
   service_account_display_name = "GKE Service Account"
   role_list = [
-    "roles/container.clusterViewer"
+    "roles/editor"
   ]
 }
+
 
 //gke
 module "gke" {
@@ -37,7 +38,7 @@ module "gke" {
 
   project_id        = "odin-sixteen"
   autopilot_enabled = var.autopilot_enabled
-  #cluster_type       = "zonal"
+  cluster_type       = "zonal"
   service_account_id = "gke-sa"
   custom_labels = {
     "purpose" : "learning"
@@ -48,6 +49,9 @@ module "gke" {
   master_auth_ip_whitelisting_name = "my-mac-public-ip"
   public_ip_address_of_the_system  = "43.251.74.0/24"
   preemptible                      = true
-  node_machine_type                = "n1-standard-1"
+  node_machine_type                = "e2-medium"
   node_disk_size_in_gb             = 50
+  kubernetes_version               = "1.22"
+  image_type                       = "COS"
 }
+
