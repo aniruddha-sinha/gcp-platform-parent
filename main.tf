@@ -3,7 +3,7 @@ module "vpc" {
   source = "git@github.com:aniruddha-sinha/gcp-network-module.git?ref=master"
   //source = "../../modules/vpc"
 
-  project-id               = "odin-sixteen"
+  project-id               = "odin-twenty"
   is-network-created       = false
   regions                  = ["us-central1"]
   ip-cidrs                 = ["10.0.130.0/24"]
@@ -12,12 +12,12 @@ module "vpc" {
   enable-advanced-features = true
 }
 
-//iam
+//iam: not needed for autopilot
 module "iam" {
   source = "git@github.com:aniruddha-sinha/gcp-iam-module.git?ref=main"
   //source = "../../modules/iam"
 
-  project_id                   = "odin-sixteen"
+  project_id                   = "odin-twenty"
   service_account_id           = "gke-sa"
   service_account_display_name = "GKE Service Account"
   role_list = [
@@ -25,33 +25,40 @@ module "iam" {
   ]
 }
 
-
-//gke
-module "gke" {
-  depends_on = [
-    module.vpc,
-    module.iam
-  ]
-
-  source = "git::https://github.com/aniruddha-sinha/gke?ref=main"
-  //source = "../../modules/gke"
-
-  project_id        = "odin-sixteen"
-  autopilot_enabled = var.autopilot_enabled
-  cluster_type       = "zonal"
-  service_account_id = "gke-sa"
-  custom_labels = {
-    "purpose" : "learning"
-    "billing" : "central-billing-account-v2"
-  }
-  region_preference                = "us-central1"
-  zone_preference                  = "us-central1-a"
-  master_auth_ip_whitelisting_name = "my-mac-public-ip"
-  public_ip_address_of_the_system  = "43.251.74.0/24"
-  preemptible                      = true
-  node_machine_type                = "e2-medium"
-  node_disk_size_in_gb             = 50
-  kubernetes_version               = "1.22"
-  image_type                       = "COS"
+data "google_container_engine_versions" "k8s_versions" {
+  project  = "odin-twenty"
+  provider = google-beta
+  location = "us-central1"
 }
 
+//autopilot cluster new module
+module "vulcan" {
+  depends_on = [
+    module.vpc,
+    # module.iam
+  ]
+
+  source = "git@github.com:aniruddha-sinha/google-kubernetes-engine//autopilot?ref=main"
+
+  k8s_cluster_name                 = "vulcan"
+  project_id                       = "odin-twenty"
+  region                           = "us-central1"
+  k8s_version                      = data.google_container_engine_versions.k8s_versions.release_channel_default_version["REGULAR"]
+  master_auth_ip_whitelisting_name = "my-mac-public-ip"
+  #public_ip_address_of_the_system  = "43.251.74.0/24"
+  public_ip_address_of_the_system = "103.252.164.0/24"
+}
+
+module "sql" {
+  source = "git@github.com:aniruddha-sinha/cloudsql?ref=main"
+
+  instance_name = "xcite-0411"
+  project_id    = "odin-twenty"
+  region        = "us-central1"
+  db_tier       = "db-f1-micro"
+  disk_size     = "120"
+  disk_type     = "PD_HDD"
+  user_labels = {
+    "purpose" = "learning"
+  }
+}
