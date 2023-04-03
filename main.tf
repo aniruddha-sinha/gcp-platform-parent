@@ -1,6 +1,6 @@
 //vpc
 module "vpc" {
-  source = "git@github.com:aniruddha-sinha/gcp-network-module.git?ref=master"
+  source = "github.com/aniruddha-sinha/gcp-network-module.git?ref=master"
   //source = "../../modules/vpc"
 
   project-id               = "odin-twenty"
@@ -14,7 +14,7 @@ module "vpc" {
 
 //iam: not needed for autopilot
 module "iam" {
-  source = "git@github.com:aniruddha-sinha/gcp-iam-module.git?ref=main"
+  source = "github.com/aniruddha-sinha/gcp-iam-module.git?ref=main"
   //source = "../../modules/iam"
 
   project_id                   = "odin-twenty"
@@ -38,7 +38,7 @@ module "vulcan" {
     # module.iam
   ]
 
-  source = "git@github.com:aniruddha-sinha/google-kubernetes-engine//autopilot?ref=main"
+  source = "github.com/aniruddha-sinha/google-kubernetes-engine//autopilot?ref=main"
 
   k8s_cluster_name                 = "vulcan"
   project_id                       = "odin-twenty"
@@ -50,7 +50,7 @@ module "vulcan" {
 }
 
 module "sql" {
-  source = "git@github.com:aniruddha-sinha/cloudsql?ref=main"
+  source = "github.com/aniruddha-sinha/cloudsql?ref=main"
 
   instance_name = "xcite-0411"
   project_id    = "odin-twenty"
