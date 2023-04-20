@@ -25,40 +25,40 @@ module "iam" {
   ]
 }
 
-data "google_container_engine_versions" "k8s_versions" {
-  project  = "odin-twenty"
-  provider = google-beta
-  location = "us-central1"
-}
+# data "google_container_engine_versions" "k8s_versions" {
+#   project  = "odin-twenty"
+#   provider = google-beta
+#   location = "us-central1"
+# }
 
-//autopilot cluster new module
-module "vulcan" {
-  depends_on = [
-    module.vpc,
-    # module.iam
-  ]
+# //autopilot cluster new module
+# module "vulcan" {
+#   depends_on = [
+#     module.vpc,
+#     # module.iam
+#   ]
 
-  source = "github.com/aniruddha-sinha/google-kubernetes-engine//autopilot?ref=main"
+#   source = "github.com/aniruddha-sinha/google-kubernetes-engine//autopilot?ref=main"
 
-  k8s_cluster_name                 = "vulcan"
-  project_id                       = "odin-twenty"
-  region                           = "us-central1"
-  k8s_version                      = data.google_container_engine_versions.k8s_versions.release_channel_default_version["REGULAR"]
-  master_auth_ip_whitelisting_name = "my-mac-public-ip"
-  #public_ip_address_of_the_system  = "43.251.74.0/24"
-  public_ip_address_of_the_system = "103.252.164.0/24"
-}
+#   k8s_cluster_name                 = "vulcan"
+#   project_id                       = "odin-twenty"
+#   region                           = "us-central1"
+#   k8s_version                      = data.google_container_engine_versions.k8s_versions.release_channel_default_version["REGULAR"]
+#   master_auth_ip_whitelisting_name = "my-mac-public-ip"
+#   #public_ip_address_of_the_system  = "43.251.74.0/24"
+#   public_ip_address_of_the_system = "103.252.164.0/24"
+# }
 
-module "sql" {
-  source = "github.com/aniruddha-sinha/cloudsql?ref=main"
+# module "sql" {
+#   source = "github.com/aniruddha-sinha/cloudsql?ref=main"
 
-  instance_name = "xcite-0411"
-  project_id    = "odin-twenty"
-  region        = "us-central1"
-  db_tier       = "db-f1-micro"
-  disk_size     = "120"
-  disk_type     = "PD_HDD"
-  user_labels = {
-    "purpose" = "learning"
-  }
-}
+#   instance_name = "xcite-0411"
+#   project_id    = "odin-twenty"
+#   region        = "us-central1"
+#   db_tier       = "db-f1-micro"
+#   disk_size     = "120"
+#   disk_type     = "PD_HDD"
+#   user_labels = {
+#     "purpose" = "learning"
+#   }
+# }
